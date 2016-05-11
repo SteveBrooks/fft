@@ -1,0 +1,39 @@
+{
+  "name": "fft",
+  "version": "0.9.0",
+  "description": "A simple Fast Fourier Transform.",
+  "main": "index.js",
+  "scripts": {
+    "test": "gulp"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SteveBrooks/fft.git"
+  },
+  "keywords": [
+    "FFT",
+    "Fast",
+    "Fourier",
+    "Transform"
+  ],
+  "author": "Steve Brooks",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/SteveBrooks/fft/issues"
+  },
+  "homepage": "https://github.com/SteveBrooks/fft#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "gulp": "^3.9.1",
+    "gulp-exclude-gitignore": "^1.0.0",
+    "gulp-if": "^2.0.1",
+    "gulp-istanbul": "^0.10.4",
+    "gulp-jshint": "^2.0.0",
+    "gulp-mocha": "^2.2.0",
+    "gulp-plumber": "^1.1.0",
+    "gulp-util": "^3.0.7",
+    "jshint": "^2.9.2",
+    "jshint-stylish": "^2.2.0"
+  }
+}
