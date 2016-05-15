@@ -3,12 +3,14 @@
 
 var expect = require('chai').expect;
 
+var testUtil = require('./testUtil.js');
+
 var fft = require('../lib/fft.js');
 
 describe('fft', function() {
 
     function createTestData( ) {
-        var n = 16;
+        var n = 8;
         var dt = 4 * Math.PI/n;
         var t = 0.0;
         var i;
@@ -27,17 +29,6 @@ describe('fft', function() {
         var n = 8;
         var data = new Array(4 * n + 1);
         data.fill(0.0);
-        data[1] = 1;
-        data[5] = 1;
-        data[9] = 1;
-        data[13] = -3;
-        return data;
-    }
-
-    function createTestData3( ) {
-        var n = 8;
-        var data = new Array(4 * n + 1);
-        data.fill(0.0);
         data[3] = 1;
         data[5] = 2;
         data[7] = 3;
@@ -48,28 +39,8 @@ describe('fft', function() {
         return data;
     }
 
-    function logData(msg,data,t) {
-        function round() {
-            return data.map(function(d){
-                return d.toFixed(1);
-            });
-        }
-       //console.log(msg + ':' + JSON.stringify(round()));
-    }
-
-    function power(data) {
-        var i, j=0, n = (data.length-1) / 2;
-        var result = new Array(n/2);
-        for(i=1; i<=n; i+=2) {
-            result[j] = Math.sqrt(data[i]*data[i] + data[i+1]*data[i+1]);
-            j++;
-        }
-        return result;
-    }
-
     it('should be an object', function() {
         expect(fft).to.be.an('object');
-
         expect(fft).to.have.ownProperty('transform');
         expect(fft.transform).to.be.a('function');
         expect(fft).to.have.ownProperty('inverse');
@@ -79,42 +50,58 @@ describe('fft', function() {
     function assertArraysMatchWithin(d1, d2, delta) {
         expect(d1.length).to.be.eql(d2.length);
         d1.forEach(function(e1, index) {
-            expect(Math.abs(e1 - d2[index])).to.be.below(delta, 'at index ' + index);
+            expect(d2[index]).to.be.eqlWithinError(e1, delta);
         });
     }
 
     describe('#transform', function() {
-        var data = createTestData3();
-        var expected = data.slice(0);
+        var data = createTestData();
         var transformed;
         var inverse;
-        var pwr;
 
-        before(function() {
-            logData('original', expected.slice(1));
-            transformed = fft.transform(data).slice(0);
-            logData('transformed',transformed.slice(1));
-            pwr = power(transformed);
-            logData('power',pwr.slice(0));
-            inverse = fft.inverse(transformed).slice(0);
-            logData('inverted',inverse.slice(1));
-        });
+        describe('Given the transform of data', function() {
+            before(function() {
+               transformed = fft.transform(data).slice(0);
+           });
 
-        it('should return the expected transformed data', function() {
-            assertArraysMatchWithin(expected, inverse, 1E-12);
+            it('should have the expected mirrored frequency structure', function() {
+                var n = (data.length-1)/2;
+                var expectedIntervals = n / 2;
+                var start = 3;
+                var i, expected, test, testIndex;
+                var r0, i0, r1, i1, m0, m1;
+
+                for(i=start;i<=expectedIntervals; i+=2) {
+                    // (r0,i0) = -(r1,i1)
+                    r0 = transformed[i];
+                    i0 = transformed[i+1];
+                    r1 = transformed[data.length-i+start-2];
+                    i1 = transformed[data.length-i+start-1];
+
+                    // assert the magnitudes are equal
+                    m0 = Math.sqrt(r0*r0+i0*i0);
+                    m1 = Math.sqrt(r1*r1+i1*i1);
+                    expect(m0).to.be.eqlWithinError(m1, 1E-10);
+                }
+            });
         });
     });
 
-    describe.skip('#inverse', function() {
-        var data = [];
-        var inverted;
+    describe('#inverse', function() {
+        var data = createTestData2();
+        var expected = data.slice(0);
+        var transformed;
+        var inverse;
 
-        before(function() {
-            //inverted = fft.inverse(data);
-        });
+        describe('Given the inverse of transformed data', function() {
+            before(function() {
+                transformed = fft.transform(data).slice(0);
+                inverse = fft.inverse(transformed).slice(0);
+            });
 
-        it('should return the expected inverse transform data', function() {
-            expect(true).to.be.false;
+            it('should match the original data within 1E-12', function() {
+                assertArraysMatchWithin(expected, inverse, 1E-12);
+            });
         });
     });
 });
