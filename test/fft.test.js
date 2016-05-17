@@ -22,7 +22,6 @@ describe('fft2', function() {
             data[i] = Complex(Math.sin(t),0);
             t += dt;
         }
-        console.log(JSON.stringify(data, null, 4));
         return data;
     }
 
@@ -69,10 +68,8 @@ describe('fft2', function() {
                 var i, expected, test, testIndex;
                 var z0, z1;
 
-                console.log(JSON.stringify(data, null, 4));
 
                 for(i=start;i<=expectedIntervals; i++) {
-                    console.log(i,expectedIntervals);
                     z0 = transformed[i];
                     z1 = transformed[data.length-i+start-1];
                     expect(z0.abs()).to.be.eqlWithinError(z1.abs(), 1E-10);

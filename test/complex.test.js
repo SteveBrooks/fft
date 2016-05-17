@@ -136,7 +136,6 @@ describe('Complex', function() {
 
         it('should return the complex sum', function() {
             var c3 = c1.add(c2);
-            console.log(c3.toString());
             expect(c3.re).to.be.eql(4);
             expect(c3.im).to.be.eql(6);
         });
