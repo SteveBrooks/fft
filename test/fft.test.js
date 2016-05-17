@@ -4,38 +4,35 @@
 var expect = require('chai').expect;
 
 var testUtil = require('./testUtil.js');
-
+var Complex = require('../lib/complex.js');
 var fft = require('../lib/fft.js');
 
-describe('fft', function() {
+describe('fft2', function() {
 
     function createTestData( ) {
-        var n = 8;
+        var n = 4;
         var dt = 4 * Math.PI/n;
         var t = 0.0;
         var i;
         var data = new Array(2 * n + 1);
 
-        data.fill(0.0);
+        data.fill(Complex());
 
-        for(i=1; i<(data.length-1)/2; i+=2) {
-            data[i] = Math.sin(t);
+        for(i=1; i<(data.length-1)/2; i++) {
+            data[i] = Complex(Math.sin(t),0);
             t += dt;
         }
+        console.log(JSON.stringify(data, null, 4));
         return data;
     }
 
     function createTestData2( ) {
-        var n = 8;
-        var data = new Array(4 * n + 1);
-        data.fill(0.0);
-        data[3] = 1;
-        data[5] = 2;
-        data[7] = 3;
-        data[9] = 4;
-        data[11] = 5;
-        data[13] = 6;
-        data[15] = 7;
+        var i,n = 8;
+        var data = new Array(2 * n + 1);
+        data.fill(Complex());
+        for(i=1; i<=n; i++) {
+            data[i] = Complex(i,0);
+        }
         return data;
     }
 
@@ -50,7 +47,8 @@ describe('fft', function() {
     function assertArraysMatchWithin(d1, d2, delta) {
         expect(d1.length).to.be.eql(d2.length);
         d1.forEach(function(e1, index) {
-            expect(d2[index]).to.be.eqlWithinError(e1, delta);
+            expect(d2[index].re).to.be.eqlWithinError(e1.re, delta);
+            expect(d2[index].im).to.be.eqlWithinError(e1.im, delta);
         });
     }
 
@@ -66,22 +64,18 @@ describe('fft', function() {
 
             it('should have the expected mirrored frequency structure', function() {
                 var n = (data.length-1)/2;
-                var expectedIntervals = n / 2;
-                var start = 3;
+                var expectedIntervals = n;
+                var start = 2;
                 var i, expected, test, testIndex;
-                var r0, i0, r1, i1, m0, m1;
+                var z0, z1;
 
-                for(i=start;i<=expectedIntervals; i+=2) {
-                    // (r0,i0) = -(r1,i1)
-                    r0 = transformed[i];
-                    i0 = transformed[i+1];
-                    r1 = transformed[data.length-i+start-2];
-                    i1 = transformed[data.length-i+start-1];
+                console.log(JSON.stringify(data, null, 4));
 
-                    // assert the magnitudes are equal
-                    m0 = Math.sqrt(r0*r0+i0*i0);
-                    m1 = Math.sqrt(r1*r1+i1*i1);
-                    expect(m0).to.be.eqlWithinError(m1, 1E-10);
+                for(i=start;i<=expectedIntervals; i++) {
+                    console.log(i,expectedIntervals);
+                    z0 = transformed[i];
+                    z1 = transformed[data.length-i+start-1];
+                    expect(z0.abs()).to.be.eqlWithinError(z1.abs(), 1E-10);
                 }
             });
         });

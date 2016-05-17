@@ -17,7 +17,7 @@ describe('testUtil', function() {
                     expect(new Array(testCase)).to.have.length.eqlWithinError(4,2,'oops');
                 });
             });
-        });    
+        });
 
         describe('negative tests', function() {
             [-1,0,1,7,8,9].forEach(function(testCase){
@@ -33,5 +33,5 @@ describe('testUtil', function() {
                 });
             });
         });
-    }); 
+    });
 });

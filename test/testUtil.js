@@ -13,14 +13,14 @@ chai.Assertion.addMethod('eqlWithinError', function(value, delta, msg){
         new chai.Assertion(obj, msg).to.have.property('length');
         var len = obj.length;
         this.assert(
-            len >= start && len <= finish, 
-                'expected #{this} to have a length within ' + range, 
+            len >= start && len <= finish,
+                'expected #{this} to have a length within ' + range,
                 'expected #{this} to not have a length within ' + range
         );
     } else {
         this.assert(
-            obj >= start && obj <= finish, 
-                'expected #{this} to be within ' + range, 
+            obj >= start && obj <= finish,
+                'expected #{this} to be within ' + range,
                 'expected #{this} to not be within ' + range
         );
     }
