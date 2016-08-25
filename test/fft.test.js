@@ -25,6 +25,22 @@ describe('fft2', function() {
         return data;
     }
 
+    function createTestData1( ) {
+        var n = 256;
+        var dt = 4 * Math.PI/n;
+        var t = 0.0;
+        var i;
+        var data = new Array(2 * n + 1);
+
+        data.fill(Complex());
+
+        for(i=1; i<(data.length-1)/2; i++) {
+            data[i] = Complex(Math.sin(2*t)+Math.sin(3*t/2),0);
+            t += dt;
+        }
+        return data;
+    }
+
     function createTestData2( ) {
         var i,n = 8;
         var data = new Array(2 * n + 1);
@@ -74,6 +90,35 @@ describe('fft2', function() {
                     z1 = transformed[data.length-i+start-1];
                     expect(z0.abs()).to.be.eqlWithinError(z1.abs(), 1E-10);
                 }
+            });
+        });
+    });
+
+    describe('Given a function consisting of two sinusoidal functions', function() {
+        var data;
+        var spectrum = [];
+        before(function() {
+            data = fft.transform(createTestData1()).slice(0);
+            powerSpectrum(data);
+        });
+
+        function powerSpectrum(d) {
+            var i, N = (d.length-1)/2;
+            for(i=2; i<=N; i++) {
+                d[i].divide(d[1]);
+                //console.log(i, d[i].toString(2));
+            }
+            d[1].divide(d[1]);
+            //console.log(1, d[1].toString(2));
+            
+            for(i=2; i<=N; i++) {
+                spectrum.push(d[i].abs());
+            }
+        }
+
+        it('should return the expected power spectrum', function() {
+            spectrum.forEach(function(s,i){
+                console.log(i, s);
             });
         });
     });
